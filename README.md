@@ -48,7 +48,7 @@ PORT=5000
 NODE_ENV=development
 
 # MongoDB connection string (local or Atlas)
-MONGO_URI=mongodb://localhost:27017/ecommerce
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/ecommerce
 
 # JWT - use a long random string
 JWT_SECRET=change-me-to-a-long-random-string
@@ -69,7 +69,7 @@ AUTH_RATE_LIMIT_MAX=20
 | --- | --- |
 | `PORT` | Port the API listens on (default `5000`) |
 | `NODE_ENV` | `development` or `production` |
-| `MONGO_URI` | MongoDB connection string (local or Atlas) |
+| `MONGO_URI` | MongoDB Atlas connection string (`mongodb+srv://<username>:<password>@<cluster>.mongodb.net/ecommerce`). A local database also works: `mongodb://localhost:27017/ecommerce` |
 | `JWT_SECRET` | Token signing secret. Required, the server refuses to start without it. Generate one with `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` |
 | `JWT_EXPIRES_IN` | Token lifetime, e.g. `1d` |
 | `ADMIN_NAME` / `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Used by `npm run seed:admin` to create the first admin |
