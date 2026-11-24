@@ -9,7 +9,6 @@ import userRoutes from './modules/users/userRoutes.js';
 import categoryRoutes from './modules/categories/categoryRoutes.js';
 import productRoutes from './modules/products/productRoutes.js';
 import orderRoutes from './modules/orders/orderRoutes.js';
-import docsRoutes from '../docs/docsRoutes.js';
 import { globalLimiter } from './middleware/rateLimiters.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 
@@ -17,11 +16,6 @@ const app = express();
 
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
-}
-// Swagger UI needs inline scripts, so it is mounted before helmet's strict CSP.
-// Off in production unless ENABLE_DOCS=true.
-if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_DOCS === 'true') {
-  app.use(docsRoutes);
 }
 app.use(helmet());
 app.use(cors());

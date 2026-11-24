@@ -63,9 +63,6 @@ ADMIN_PASSWORD=admin@123
 RATE_LIMIT_WINDOW_MINUTES=15
 RATE_LIMIT_MAX=300
 AUTH_RATE_LIMIT_MAX=20
-
-# Swagger UI at /api-docs
-ENABLE_DOCS=true
 ```
 
 | Variable | Purpose |
@@ -79,11 +76,10 @@ ENABLE_DOCS=true
 | `RATE_LIMIT_WINDOW_MINUTES` | Rate-limit window, shared by both limiters |
 | `RATE_LIMIT_MAX` | Max requests per window for the whole API |
 | `AUTH_RATE_LIMIT_MAX` | Max requests per window for login/register |
-| `ENABLE_DOCS` | Swagger UI at `/api-docs` is on outside production; set `true` to expose it in production too |
 
 ## Documentation
 
-- **Swagger UI:** start the server and open <http://localhost:5000/api-docs> (raw spec at `/api-docs.json`, source split by section in [docs/openapi/](docs/openapi/): `paths/<section>.js` and `components/*.js`, assembled by `index.js`). "Try it out" is enabled and calls the same server. Click **Authorize** and paste the token from `/api/auth/login`. Disabled when `NODE_ENV=production` unless `ENABLE_DOCS=true`.
+- **Postman:** [docs/postman_collection.json](docs/postman_collection.json) covers every endpoint and is written for the sample data (`npm run seed:data`: an Electronics category tree and 10 products) plus the admin from `npm run seed:admin`. Import it, set `adminEmail` / `adminPassword` if yours differ, and run the folders top to bottom (Auth, Users, Categories, Products, Orders, Cleanup). Seeded categories and products are looked up by name / SKU, and tokens and ids are saved to collection variables by test scripts, so no copy-pasting is needed. Requests are named `Action Resource (Role)`; ones that expect the API to refuse use a dash, e.g. `Create Product - Forbidden for Customer`. A full run adds one customer and places two orders (stock of the ordered products changes).
 
 ## Endpoints
 
@@ -141,7 +137,7 @@ src/
     orders/                orders, stock, status flow
 tests/                     integration tests (node:test + supertest)
 Dockerfile, docker-compose.yml   container setup
-docs/                      Swagger UI route (docsRoutes.js) and the OpenAPI spec (openapi/)
+docs/                      Postman collection
 ```
 
 Inside a module, a request flows through these files in order:

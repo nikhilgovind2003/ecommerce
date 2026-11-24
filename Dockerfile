@@ -7,7 +7,6 @@ RUN npm ci --omit=dev
 
 COPY server.js ./
 COPY src ./src
-COPY docs ./docs
 
 USER node
 EXPOSE 5000
