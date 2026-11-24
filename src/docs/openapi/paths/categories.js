@@ -153,7 +153,7 @@ one of its own descendants (400). Use \`"parent": null\` to make it a root categ
       tags: ['Categories'],
       summary: 'Delete a category (admin)',
       responses: {
-        '204': { description: 'Deleted' },
+        '200': { description: 'Deleted' },
         '403': { $ref: '#/components/responses/Forbidden' },
         '404': { $ref: '#/components/responses/NotFound' },
         '409': {

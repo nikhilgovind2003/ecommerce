@@ -11,7 +11,7 @@ export const info = {
 `,
 };
 
-export const servers = [{ url: '/', description: 'Same origin as this page' }];
+export const servers = [{ url: '/', description: 'Same origin as the docs page' }];
 
 export const tags = [
   { name: 'Auth' },

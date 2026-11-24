@@ -65,7 +65,7 @@ All routes are under `/api`. Send `Authorization: Bearer <token>` where auth is 
 | GET | `/orders`, `/orders/:id` | admin | All orders (`status`, `user` filters) |
 | PATCH | `/orders/:id/status` | admin | Move an order through the status workflow |
 
-Successful responses look like `{ "status": "success", "data": ..., "pagination": ... }`. Errors always look like `{ "status": "error", "message": "...", "errors": [{ "field": "...", "message": "..." }] }` with an appropriate status code (400, 401, 403, 404, 409, 429, 500).
+Successful responses look like `{ "status": "success", "message": "...", "data": ..., "pagination": ... }`. Errors always look like `{ "status": "error", "message": "...", "errors": [{ "field": "...", "message": "..." }] }` with an appropriate status code (400, 401, 403, 404, 409, 429, 500).
 
 `sort` values: `newest` (default), `oldest`, `price_asc`, `price_desc`, `name_asc`, `name_desc`.
 
@@ -75,22 +75,22 @@ Code is grouped by feature. Every module has the same five files:
 
 ```
 server.js                  starts the server
-scripts/seedAdmin.js       creates the first admin
 src/
   app.js                   middleware, then the routes of each module, then error handling
   config/db.js             MongoDB connection
-  docs/docs.routes.js      Swagger UI (serves src/docs/openapi/)
+  docs/docsRoutes.js      Swagger UI (serves src/docs/openapi/)
+  database/
+    models/                Mongoose models: user, category, product, order
+    seeders/               seedAdmin (first admin), seedData (sample data)
+  middleware/              auth, authorize, validate, rate limiters, error handler
+  utils/                   appError, asyncHandler, password, slug, query (pagination + search helpers)
+  validators/              reusable validation rules
   modules/
     auth/                  register, login, "me"
     users/                 admin user management, own profile
     categories/            multi-level categories
     products/              products, search, filters
     orders/                orders, stock, status flow
-  shared/
-    BaseController.js      the success / created / no-content response helpers
-    middleware/            auth, authorize, validate, rate limiters, error handler
-    utils/                 AppError, asyncHandler, query (pagination + search helpers)
-    validators/            reusable validation rules
 docs/                      Postman collection
 ```
 
@@ -98,11 +98,11 @@ Inside a module, a request flows through these files in order:
 
 | File | Job |
 | --- | --- |
-| `*.routes.js` | Maps a URL to a list of steps: login check, role check, validation, controller |
-| `*.validators.js` | Checks the request input (express-validator) |
-| `*.controller.js` | A class. Reads the request, calls the service, sends the response. No business logic |
-| `*.service.js` | A class. All the business rules and database work |
-| `*.model.js` | The Mongoose schema and indexes |
+| `*Routes.js` | Maps a URL to a list of steps: login check, role check, validation, controller |
+| `*Validators.js` | Checks the request input (express-validator) |
+| `*Controller.js` | A class with static handlers. Reads the request, calls the service, sends the response with `res.status(...).json(...)`. No business logic |
+| `*Service.js` | A class with static methods. All the business rules and database work |
+| `database/models/*Model.js` | The Mongoose schema and indexes only (no hooks) |
 
 ## How it works
 
@@ -110,7 +110,7 @@ Inside a module, a request flows through these files in order:
 
 **Categories.** Each category stores its `parent` and an `ancestors` list (every category above it). This gives unlimited depth with simple queries:
 - The tree is built in memory from one query.
-- "Everything under X" is one query: `{ ancestors: X }`. The product filter uses this to include sub-categories.
+- "Everything under X" is one query: `{ ancestors: X }`. The product filter uses it to include sub-categories.
 - A category cannot become its own parent or move under one of its descendants (checked through `ancestors`).
 - Two siblings cannot share a name. A category with children or products cannot be deleted.
 

@@ -145,7 +145,7 @@ export const productsPaths = {
       tags: ['Products'],
       summary: 'Delete a product (admin)',
       responses: {
-        '204': { description: 'Deleted' },
+        '200': { description: 'Deleted' },
         '403': { $ref: '#/components/responses/Forbidden' },
         '404': { $ref: '#/components/responses/NotFound' },
       },

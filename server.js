@@ -10,6 +10,6 @@ if (!process.env.JWT_SECRET) {
 
 const PORT = process.env.PORT || 5000;
 
-connectDB().then(() => {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+connectDB().then(function () {
+  app.listen(PORT, function () { return console.log(`Server running on port ${PORT}`); });
 });

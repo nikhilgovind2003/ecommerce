@@ -4,14 +4,14 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import authRoutes from './modules/auth/auth.routes.js';
-import userRoutes from './modules/users/user.routes.js';
-import categoryRoutes from './modules/categories/category.routes.js';
-import productRoutes from './modules/products/product.routes.js';
-import orderRoutes from './modules/orders/order.routes.js';
-import docsRoutes from './docs/docs.routes.js';
-import { globalLimiter } from './shared/middleware/rateLimiters.js';
-import { notFound, errorHandler } from './shared/middleware/errorHandler.js';
+import authRoutes from './modules/auth/authRoutes.js';
+import userRoutes from './modules/users/userRoutes.js';
+import categoryRoutes from './modules/categories/categoryRoutes.js';
+import productRoutes from './modules/products/productRoutes.js';
+import orderRoutes from './modules/orders/orderRoutes.js';
+import docsRoutes from './docs/docsRoutes.js';
+import { globalLimiter } from './middleware/rateLimiters.js';
+import { notFound, errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/api', globalLimiter);
 
-app.get('/', (req, res) => res.json({ message: 'API is running' }));
+app.get('/', function (req, res) { return res.json({ message: 'API is running' }); });
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);

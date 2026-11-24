@@ -1,4 +1,4 @@
-// Assembles the OpenAPI document from the section files in this folder.
+// Assembles the OpenAPI document from the section files in the same folder.
 import { info, servers, tags, security } from './info.js';
 import { authPaths } from './paths/auth.js';
 import { usersPaths } from './paths/users.js';

@@ -10,7 +10,7 @@ export const responses = {
     content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
   },
   Forbidden: {
-    description: 'Not allowed for this role or account is deactivated',
+    description: 'Not allowed for the current role or account is deactivated',
     content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
   },
   NotFound: {
