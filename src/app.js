@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth');
+const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -15,10 +16,7 @@ app.use(cookieParser());
 app.get('/', (req, res) => res.json({ message: 'API is running' }));
 app.use('/api/auth', authRoutes);
 
-app.use((req, res) => res.status(404).json({ message: 'Not found' }));
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(err.status || 500).json({ message: err.message || 'Server error' });
-});
+app.use(notFound);
+app.use(errorHandler);
 
 module.exports = app;
