@@ -48,7 +48,7 @@ PORT=5000
 NODE_ENV=development
 
 # MongoDB connection string (local or Atlas)
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/ecommerce
+MONGO_URI=MONGO_URI=mongodb+srv://govindnikhil508_db_user:Zmtzbtc8xZipOVZg@cluster0.abcrmll.mongodb.net/ecommerce
 
 # JWT - use a long random string
 JWT_SECRET=change-me-to-a-long-random-string
