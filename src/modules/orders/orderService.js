@@ -112,8 +112,8 @@ class OrderService {
   }
 
   // Adds stock back. `lines` is anything shaped like [{ product, quantity }] (also works for order.items).
-  static giveBackStock(lines) {
-    if (lines.length === 0) return null;
+  static async giveBackStock(lines) {
+    if (lines.length === 0) return;
 
     const updates = lines.map(function (line) {
       return {

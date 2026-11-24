@@ -1,0 +1,28 @@
+# `docker compose up --build` starts the API on :5000 with its own MongoDB.
+# Secrets come from your .env file (JWT_SECRET, ADMIN_*). MONGO_URI is set here to the bundled database.
+services:
+  api:
+    build: .
+    ports:
+      - "${PORT:-5000}:5000"
+    env_file: .env
+    environment:
+      PORT: 5000
+      MONGO_URI: mongodb://mongo:27017/ecommerce
+      ENABLE_DOCS: "true"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mongo-data:

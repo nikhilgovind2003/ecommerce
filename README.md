@@ -20,6 +20,24 @@ npm run dev                 # development (nodemon)   |   npm start  for plain n
 
 The API runs on `http://localhost:5000` (or `PORT`). Public registration only ever creates **customers**, so the admin has to be created with the seed script.
 
+### Docker
+
+```bash
+cp .env.example .env                                  # set JWT_SECRET and the ADMIN_* values
+docker compose up --build                             # API on http://localhost:5000 plus its own MongoDB
+docker compose exec api npm run seed:admin            # creates the first admin
+```
+
+`MONGO_URI` is overridden by `docker-compose.yml` to point at the bundled database, so whatever is in `.env` is ignored for it.
+
+### Tests
+
+```bash
+npm test
+```
+
+Integration tests (`tests/api.test.js`) run the real app against an in-memory MongoDB (downloaded on first run). They cover auth and roles, the category tree and circular-parent checks, product filters, and orders (server-side pricing, stock, overselling race, privacy, status flow, restock on cancel).
+
 ### Environment variables
 
 See [.env.example](.env.example). The important ones:
@@ -91,6 +109,8 @@ src/
     categories/            multi-level categories
     products/              products, search, filters
     orders/                orders, stock, status flow
+tests/                     integration tests (node:test + supertest)
+Dockerfile, docker-compose.yml   container setup
 docs/                      Postman collection
 ```
 
