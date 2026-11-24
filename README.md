@@ -35,7 +35,6 @@ See [.env.example](.env.example). The important ones:
 
 ## Documentation
 
-- **Swagger / OpenAPI:** [docs/openapi.yaml](docs/openapi.yaml) (paste it into <https://editor.swagger.io> or import it into Postman/Insomnia)
 - **Postman:** [docs/postman_collection.json](docs/postman_collection.json). Import it, set `adminEmail` / `adminPassword`, and run the folders top to bottom on a fresh database. Tokens and ids are stored in collection variables by test scripts, so no copy-pasting is needed.
 
 ## Endpoints
@@ -89,7 +88,7 @@ src/
 tests/
   unit/                   pure logic
   integration/            full API against a throwaway database
-docs/                     OpenAPI spec and Postman collection
+docs/                     Postman collection
 ```
 
 ## Design decisions
