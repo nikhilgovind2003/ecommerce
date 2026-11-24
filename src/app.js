@@ -1,20 +1,27 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users');
-const categoryRoutes = require('./routes/categories');
-const productRoutes = require('./routes/products');
-const orderRoutes = require('./routes/orders');
-const { globalLimiter } = require('./middleware/rateLimiters');
-const { notFound, errorHandler } = require('./middleware/errorHandler');
+// Builds the Express app: security middleware, then the routes of each module, then error handling.
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import authRoutes from './modules/auth/auth.routes.js';
+import userRoutes from './modules/users/user.routes.js';
+import categoryRoutes from './modules/categories/category.routes.js';
+import productRoutes from './modules/products/product.routes.js';
+import orderRoutes from './modules/orders/order.routes.js';
+import docsRoutes from './docs/docs.routes.js';
+import { globalLimiter } from './shared/middleware/rateLimiters.js';
+import { notFound, errorHandler } from './shared/middleware/errorHandler.js';
 
 const app = express();
 
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+}
+// Swagger UI needs inline scripts, so it is mounted before helmet's strict CSP.
+// Off in production unless ENABLE_DOCS=true.
+if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_DOCS === 'true') {
+  app.use(docsRoutes);
 }
 app.use(helmet());
 app.use(cors());
@@ -33,4 +40,4 @@ app.use('/api/orders', orderRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

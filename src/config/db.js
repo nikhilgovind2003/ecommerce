@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+// Connects to MongoDB. The app stops if the connection string is missing or wrong.
+import mongoose from 'mongoose';
 
-module.exports = async function connectDB() {
+export default async function connectDB() {
   const uri = process.env.MONGO_URI;
   if (!uri) {
     console.error('MONGO_URI is not set. Add your MongoDB URL to the .env file.');

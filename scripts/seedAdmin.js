@@ -1,6 +1,7 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-const User = require('../src/models/User');
+// Run with `npm run seed:admin`. Creates the first admin account from the ADMIN_* values in .env.
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import User from '../src/modules/users/user.model.js';
 
 (async () => {
   const { MONGO_URI, ADMIN_NAME = 'Admin', ADMIN_EMAIL, ADMIN_PASSWORD } = process.env;
