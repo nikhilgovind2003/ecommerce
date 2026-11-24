@@ -1,4 +1,5 @@
 const Category = require('../models/Category');
+const Product = require('../models/Product');
 const AppError = require('../utils/AppError');
 const { buildTree, pruneInactive } = require('../utils/categoryTree');
 
@@ -93,6 +94,9 @@ exports.remove = async (id) => {
   const category = await findOrFail(id);
   if (await Category.exists({ parent: id })) {
     throw AppError.conflict('Category has sub-categories. Move or delete them first');
+  }
+  if (await Product.exists({ category: id })) {
+    throw AppError.conflict('Category still has products. Move or delete them first');
   }
   await category.deleteOne();
 };
