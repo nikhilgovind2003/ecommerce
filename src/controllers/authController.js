@@ -28,4 +28,4 @@ exports.login = asyncHandler(async (req, res) => {
   res.json({ status: 'success', data: authResponse(user) });
 });
 
-exports.me = (req, res) => res.json({ status: 'success', data: { user: req.user } });
+exports.me = (req, res) => res.json({ status: 'success', data: req.user });
