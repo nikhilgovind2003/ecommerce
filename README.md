@@ -33,7 +33,7 @@ See [.env.example](.env.example). The important ones:
 
 ## Documentation
 
-- **Swagger UI:** start the server and open <http://localhost:5000/api-docs> (raw spec at `/api-docs.json`, source in [docs/openapi.yaml](docs/openapi.yaml)). Click **Authorize** and paste the token from `/api/auth/login`. Disabled when `NODE_ENV=production` unless `ENABLE_DOCS=true`.
+- **Swagger UI:** start the server and open <http://localhost:5000/api-docs> (raw spec at `/api-docs.json`, source split by section in [src/docs/openapi/](src/docs/openapi/): `paths/<section>.js` and `components/*.js`, assembled by `index.js`). "Try it out" is enabled and calls the same server. Click **Authorize** and paste the token from `/api/auth/login`. Disabled when `NODE_ENV=production` unless `ENABLE_DOCS=true`.
 - **Postman:** [docs/postman_collection.json](docs/postman_collection.json). Import it, set `adminEmail` / `adminPassword`, and run the folders top to bottom on a fresh database. Tokens and ids are stored in collection variables by test scripts, so no copy-pasting is needed.
 
 ## Endpoints
@@ -79,7 +79,7 @@ scripts/seedAdmin.js       creates the first admin
 src/
   app.js                   middleware, then the routes of each module, then error handling
   config/db.js             MongoDB connection
-  docs/docs.routes.js      Swagger UI (reads docs/openapi.yaml)
+  docs/docs.routes.js      Swagger UI (serves src/docs/openapi/)
   modules/
     auth/                  register, login, "me"
     users/                 admin user management, own profile
@@ -91,7 +91,7 @@ src/
     middleware/            auth, authorize, validate, rate limiters, error handler
     utils/                 AppError, asyncHandler, query (pagination + search helpers)
     validators/            reusable validation rules
-docs/                      OpenAPI spec and Postman collection
+docs/                      Postman collection
 ```
 
 Inside a module, a request flows through these files in order:

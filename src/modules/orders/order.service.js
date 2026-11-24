@@ -6,17 +6,17 @@
 //      Two customers racing for the last item can never both get it.
 //   3. Create the order. Prices always come from the database, never from the client.
 //   4. If anything fails, put the stock we already took back.
-import Order from './order.model.js';
-import Product from '../products/product.model.js';
-import AppError from '../../shared/utils/AppError.js';
-import { parsePagination, buildPagination } from '../../shared/utils/query.js';
+import Order from "./order.model.js";
+import Product from "../products/product.model.js";
+import AppError from "../../shared/utils/AppError.js";
+import { parsePagination, buildPagination } from "../../shared/utils/query.js";
 
 // Which status may follow which. An empty list means the order is finished.
 const NEXT_STATUSES = {
-  pending: ['confirmed', 'cancelled'],
-  confirmed: ['processing', 'cancelled'],
-  processing: ['shipped', 'cancelled'],
-  shipped: ['delivered'],
+  pending: ["confirmed", "cancelled"],
+  confirmed: ["processing", "cancelled"],
+  processing: ["shipped", "cancelled"],
+  shipped: ["delivered"],
   delivered: [],
   cancelled: [],
 };
@@ -34,7 +34,7 @@ class OrderService {
         const product = await this.takeStock(line);
         if (!product) {
           throw AppError.conflict(
-            `Stock changed while placing the order for product ${line.product}. Please review your cart and try again`
+            `Stock changed while placing the order for product ${line.product}. Please review your cart and try again`,
           );
         }
         reserved.push({ line, product });
@@ -44,7 +44,9 @@ class OrderService {
       return await Order.create(orderData);
     } catch (err) {
       // Something went wrong: give back whatever we already took.
-      await this.giveBackStock(reserved.map((r) => r.line)).catch((e) => console.error('Failed to restore stock', e));
+      await this.giveBackStock(reserved.map((r) => r.line)).catch((e) =>
+        console.error("Failed to restore stock", e),
+      );
       throw err;
     }
   }
@@ -54,23 +56,34 @@ class OrderService {
     const quantityByProduct = new Map();
     items.forEach(({ product, quantity }) => {
       const id = String(product);
-      quantityByProduct.set(id, (quantityByProduct.get(id) || 0) + Number(quantity));
+      quantityByProduct.set(
+        id,
+        (quantityByProduct.get(id) || 0) + Number(quantity),
+      );
     });
-    return [...quantityByProduct].map(([product, quantity]) => ({ product, quantity }));
+    return [...quantityByProduct].map(([product, quantity]) => ({
+      product,
+      quantity,
+    }));
   }
 
   // Checks all items first so the customer sees every problem at once, not one at a time.
   async checkAvailability(lines) {
     const ids = lines.map((line) => line.product);
-    const products = await Product.find({ _id: { $in: ids } }).select('name stock status');
+    const products = await Product.find({ _id: { $in: ids } }).select(
+      "name stock status",
+    );
     const productById = new Map(products.map((p) => [String(p._id), p]));
 
     const problems = [];
     for (const line of lines) {
       const product = productById.get(String(line.product));
 
-      if (!product || product.status !== 'active') {
-        problems.push({ product: line.product, message: 'Product is not available' });
+      if (!product || product.status !== "active") {
+        problems.push({
+          product: line.product,
+          message: "Product is not available",
+        });
       } else if (product.stock < line.quantity) {
         problems.push({
           product: line.product,
@@ -79,16 +92,17 @@ class OrderService {
       }
     }
 
-    if (problems.length > 0) throw AppError.badRequest('Some items cannot be ordered', problems);
+    if (problems.length > 0)
+      throw AppError.badRequest("Some items cannot be ordered", problems);
   }
 
   // Lowers the stock only if enough is still there, in one atomic step.
   // Returns the updated product, or null when there was not enough stock.
   takeStock(line) {
     return Product.findOneAndUpdate(
-      { _id: line.product, status: 'active', stock: { $gte: line.quantity } },
+      { _id: line.product, status: "active", stock: { $gte: line.quantity } },
       { $inc: { stock: -line.quantity } },
-      { returnDocument: 'after' }
+      { returnDocument: "after" },
     );
   }
 
@@ -97,7 +111,10 @@ class OrderService {
     if (lines.length === 0) return null;
 
     const updates = lines.map((line) => ({
-      updateOne: { filter: { _id: line.product }, update: { $inc: { stock: line.quantity } } },
+      updateOne: {
+        filter: { _id: line.product },
+        update: { $inc: { stock: line.quantity } },
+      },
     }));
     return Product.bulkWrite(updates);
   }
@@ -109,7 +126,8 @@ class OrderService {
 
     const items = reserved.map(({ line, product }) => {
       // Money is counted in whole cents to avoid floating point errors (0.1 + 0.2 = 0.30000000000000004).
-      const subtotalCents = Math.round(product.effectivePrice * 100) * line.quantity;
+      const subtotalCents =
+        Math.round(product.effectivePrice * 100) * line.quantity;
       totalCents += subtotalCents;
 
       return {
@@ -127,8 +145,8 @@ class OrderService {
       items,
       totalAmount: totalCents / 100,
       shippingAddress,
-      status: 'pending',
-      statusHistory: [{ status: 'pending', changedBy: userId }],
+      status: "pending",
+      statusHistory: [{ status: "pending", changedBy: userId }],
     };
   }
 
@@ -141,7 +159,10 @@ class OrderService {
 
     const page = parsePagination(query);
     const [orders, total] = await Promise.all([
-      Order.find(filter).sort({ createdAt: -1 }).skip(page.skip).limit(page.limit),
+      Order.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(page.skip)
+        .limit(page.limit),
       Order.countDocuments(filter),
     ]);
     return { orders, pagination: buildPagination(page, total) };
@@ -156,7 +177,7 @@ class OrderService {
     const page = parsePagination(query);
     const [orders, total] = await Promise.all([
       Order.find(filter)
-        .populate('user', 'name email')
+        .populate("user", "name email")
         .sort({ createdAt: -1 })
         .skip(page.skip)
         .limit(page.limit),
@@ -171,8 +192,8 @@ class OrderService {
     const filter = { _id: id };
     if (userId) filter.user = userId;
 
-    const order = await Order.findOne(filter).populate('user', 'name email');
-    if (!order) throw AppError.notFound('Order not found');
+    const order = await Order.findOne(filter).populate("user", "name email");
+    if (!order) throw AppError.notFound("Order not found");
     return order;
   }
 
@@ -184,13 +205,15 @@ class OrderService {
 
     if (onlyFrom && !onlyFrom.includes(order.status)) {
       throw AppError.badRequest(
-        `Only ${onlyFrom.join('/')} orders can be changed this way (current status: ${order.status})`
+        `Only ${onlyFrom.join("/")} orders can be changed this way (current status: ${order.status})`,
       );
     }
 
     const allowed = NEXT_STATUSES[order.status] || [];
     if (!allowed.includes(newStatus)) {
-      throw AppError.badRequest(`Cannot change order status from ${order.status} to ${newStatus}`);
+      throw AppError.badRequest(
+        `Cannot change order status from ${order.status} to ${newStatus}`,
+      );
     }
 
     // Only update if the status is still what we just read. If someone else changed it in the
@@ -200,23 +223,33 @@ class OrderService {
       { _id: order._id, status: order.status },
       {
         $set: { status: newStatus },
-        $push: { statusHistory: { status: newStatus, changedBy: actorId, note, changedAt: new Date() } },
-      }
+        $push: {
+          statusHistory: {
+            status: newStatus,
+            changedBy: actorId,
+            note,
+            changedAt: new Date(),
+          },
+        },
+      },
     );
-    if (!updated) throw AppError.conflict('Order was updated by someone else. Please reload and try again');
+    if (!updated)
+      throw AppError.conflict(
+        "Order was updated by someone else. Please reload and try again",
+      );
 
-    if (newStatus === 'cancelled') await this.giveBackStock(order.items);
+    if (newStatus === "cancelled") await this.giveBackStock(order.items);
 
     return this.getById(id, { userId });
   }
 
   // A customer may cancel their own order, but only while it is still pending.
   cancelOwnOrder(id, user) {
-    return this.changeStatus(id, 'cancelled', {
+    return this.changeStatus(id, "cancelled", {
       actorId: user._id,
       userId: user._id,
-      note: 'Cancelled by customer',
-      onlyFrom: ['pending'],
+      note: "Cancelled by customer",
+      onlyFrom: ["pending"],
     });
   }
 }
