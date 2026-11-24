@@ -40,14 +40,46 @@ Integration tests (`tests/api.test.js`) run the real app against an in-memory Mo
 
 ### Environment variables
 
-See [.env.example](.env.example). The important ones:
+Copy [.env.example](.env.example) to `.env` and edit the values:
+
+```env
+# Server
+PORT=5000
+NODE_ENV=development
+
+# MongoDB connection string (local or Atlas)
+MONGO_URI=mongodb://localhost:27017/ecommerce
+
+# JWT - use a long random string
+JWT_SECRET=change-me-to-a-long-random-string
+JWT_EXPIRES_IN=1d
+
+# First admin account, created by `npm run seed:admin`
+ADMIN_NAME=Admin
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=admin@123
+
+# Rate limiting (window is shared by both limiters)
+RATE_LIMIT_WINDOW_MINUTES=15
+RATE_LIMIT_MAX=300
+AUTH_RATE_LIMIT_MAX=20
+
+# Swagger UI at /api-docs
+ENABLE_DOCS=true
+```
 
 | Variable | Purpose |
 | --- | --- |
-| `MONGO_URI` | MongoDB connection string |
-| `JWT_SECRET` / `JWT_EXPIRES_IN` | Token signing secret (required, the server refuses to start without it) and lifetime |
-| `ADMIN_NAME` / `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Used by `npm run seed:admin` |
-| `RATE_LIMIT_MAX`, `AUTH_RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MINUTES` | Global and login/register rate limits |
+| `PORT` | Port the API listens on (default `5000`) |
+| `NODE_ENV` | `development` or `production` |
+| `MONGO_URI` | MongoDB connection string (local or Atlas) |
+| `JWT_SECRET` | Token signing secret. Required, the server refuses to start without it. Generate one with `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` |
+| `JWT_EXPIRES_IN` | Token lifetime, e.g. `1d` |
+| `ADMIN_NAME` / `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Used by `npm run seed:admin` to create the first admin |
+| `RATE_LIMIT_WINDOW_MINUTES` | Rate-limit window, shared by both limiters |
+| `RATE_LIMIT_MAX` | Max requests per window for the whole API |
+| `AUTH_RATE_LIMIT_MAX` | Max requests per window for login/register |
+| `ENABLE_DOCS` | Swagger UI at `/api-docs` is on outside production; set `true` to expose it in production too |
 
 ## Documentation
 
