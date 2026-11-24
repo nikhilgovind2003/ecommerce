@@ -83,8 +83,7 @@ ENABLE_DOCS=true
 
 ## Documentation
 
-- **Swagger UI:** start the server and open <http://localhost:5000/api-docs> (raw spec at `/api-docs.json`, source split by section in [src/docs/openapi/](src/docs/openapi/): `paths/<section>.js` and `components/*.js`, assembled by `index.js`). "Try it out" is enabled and calls the same server. Click **Authorize** and paste the token from `/api/auth/login`. Disabled when `NODE_ENV=production` unless `ENABLE_DOCS=true`.
-- **Postman:** [docs/postman_collection.json](docs/postman_collection.json). Import it, set `adminEmail` / `adminPassword`, and run the folders top to bottom on a fresh database. Tokens and ids are stored in collection variables by test scripts, so no copy-pasting is needed.
+- **Swagger UI:** start the server and open <http://localhost:5000/api-docs> (raw spec at `/api-docs.json`, source split by section in [docs/openapi/](docs/openapi/): `paths/<section>.js` and `components/*.js`, assembled by `index.js`). "Try it out" is enabled and calls the same server. Click **Authorize** and paste the token from `/api/auth/login`. Disabled when `NODE_ENV=production` unless `ENABLE_DOCS=true`.
 
 ## Endpoints
 
@@ -128,7 +127,6 @@ server.js                  starts the server
 src/
   app.js                   middleware, then the routes of each module, then error handling
   config/db.js             MongoDB connection
-  docs/docsRoutes.js      Swagger UI (serves src/docs/openapi/)
   database/
     models/                Mongoose models: user, category, product, order
     seeders/               seedAdmin (first admin), seedData (sample data)
@@ -143,7 +141,7 @@ src/
     orders/                orders, stock, status flow
 tests/                     integration tests (node:test + supertest)
 Dockerfile, docker-compose.yml   container setup
-docs/                      Postman collection
+docs/                      Swagger UI route (docsRoutes.js) and the OpenAPI spec (openapi/)
 ```
 
 Inside a module, a request flows through these files in order:

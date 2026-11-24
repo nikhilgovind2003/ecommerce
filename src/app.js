@@ -9,7 +9,7 @@ import userRoutes from './modules/users/userRoutes.js';
 import categoryRoutes from './modules/categories/categoryRoutes.js';
 import productRoutes from './modules/products/productRoutes.js';
 import orderRoutes from './modules/orders/orderRoutes.js';
-import docsRoutes from './docs/docsRoutes.js';
+import docsRoutes from '../docs/docsRoutes.js';
 import { globalLimiter } from './middleware/rateLimiters.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 
